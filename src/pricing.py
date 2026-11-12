@@ -41,7 +41,8 @@ def resolve_coupon(
 ) -> Optional[Coupon]:
     if not coupon_code:
         return None
-    return catalog.get(coupon_code)
+    normalized_code = coupon_code.strip().upper()
+    return catalog.get(normalized_code)
 
 
 def calculate_discount(subtotal: float, coupon: Optional[Coupon]) -> float:
@@ -53,6 +54,8 @@ def calculate_discount(subtotal: float, coupon: Optional[Coupon]) -> float:
         raise ValueError("discount_percent must be between 0 and 100")
 
     raw_discount = subtotal * (coupon.discount_percent / 100.0)
+    if coupon.max_discount_amount is not None:
+        raw_discount = min(raw_discount, coupon.max_discount_amount)
     return round(raw_discount, 2)
 
 

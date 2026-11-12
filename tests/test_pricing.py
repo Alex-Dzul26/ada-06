@@ -32,6 +32,16 @@ class TestOrderPricing(unittest.TestCase):
         self.assertEqual(summary.tax, 72.0)
         self.assertEqual(summary.total, 522.0)
 
+    def test_coupon_respects_max_discount_cap(self):
+        items = [OrderItem(sku="MONITOR-4K", unit_price=1000.0, quantity=1)]
+        summary = calculate_order_summary(
+            items, self.catalog, coupon_code="SAVE20CAP50", tax_rate=0.16
+        )
+        self.assertEqual(summary.subtotal, 1000.0)
+        self.assertEqual(summary.discount, 50.0)
+        self.assertEqual(summary.tax, 152.0)
+        self.assertEqual(summary.total, 1102.0)
+
 
 if __name__ == "__main__":
     unittest.main()
